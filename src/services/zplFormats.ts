@@ -1,11 +1,13 @@
 import { LabelData } from '../types';
+import { imagePathToZpl } from './imageToZplService';
+const hostName = "http://localhost:5173/"
+const uploadPath = "/uploads"
 
-export const getZplFormat = (
-  labelData: LabelData,
-  labelType : string,
-  labelType2 : string
-
-): string => {
+export const getZplFormat = async (
+    labelData: LabelData,
+    labelType: string,
+    labelType2: string
+  ): Promise<string> => {
     let zpl = ''
     let dpi = 203
 
@@ -22,6 +24,10 @@ export const getZplFormat = (
                 
                 const x = getCenteredXPosition(labelWidth, text, font);
                 const y = getCenteredYPosition(labelHeight, text, font);
+
+                let imgFullPath = hostName + uploadPath + labelData.userManualQr
+
+                let imgToZplRes = await imagePathToZpl(imgFullPath)
               
                 zpl = `
                 ^XA
@@ -32,8 +38,9 @@ export const getZplFormat = (
             
             ^FO${x},${y}^A0N,${font},${font}^FD${labelData.modelName}^FS
             ^FO${x},${y+80}^A0N,${font-20},${font-50}^FD${labelData.brandName}^FS
-
+            ^FO${x+120},${y+120}${imgToZplRes}^FS
             ^XZ`
+
             }
             else{
                 zpl = `
@@ -43,7 +50,7 @@ export const getZplFormat = (
             
             ^CI28
             
-            ^FO30,30^A0N,30,30^FD产品名称: Passive Signal Splitters 音频信号分配器^FS
+            ^FO30,30^A0N,30,30^FD产品名称: ${labelData.categoryName} 音频信号分配器^FS
             ^FO30,70^A0N,30,30^FD品牌型号: ${labelData.brandName},${labelData.modelName}^FS
             ^FO30,110^A0N,30,30^FDN.W. 9.46 lbs/4.30 kg^FS
             ^FO30,150^A0N,30,30^FDG.W. 12.32 lbs/5.60 kg^FS

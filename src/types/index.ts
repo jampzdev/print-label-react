@@ -1,6 +1,7 @@
 export interface LabelData {
   modelName: string;
   brandName : string;
+  categoryName : string;
   serialNumber: string;
   cartonHeight: number;
   cartonWidth: number;

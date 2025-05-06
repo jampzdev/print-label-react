@@ -8,6 +8,7 @@ const LabelForm: React.FC<LabelFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<LabelData>({
     modelName: '',
     brandName: '',
+    categoryName : '',
     serialNumber: '',
     cartonHeight: 0,
     cartonWidth: 0,
@@ -93,6 +94,9 @@ const LabelForm: React.FC<LabelFormProps> = ({ onSubmit }) => {
         *,
         brands (
           brand_name
+        ),
+        product_category (
+          category_name
         )
       `)
       .ilike('product_name', `%${modelSearchInput}%`)
@@ -108,6 +112,7 @@ const LabelForm: React.FC<LabelFormProps> = ({ onSubmit }) => {
           modelName: selected.product_name,
           serialNumber: selected.serial_number,
           brandName: selected.brands?.brand_name || '',
+          categoryName: selected.product_category?.category_name || '',
           userManualQr : selected.user_manual_qr_path
         }));
       }

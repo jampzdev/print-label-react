@@ -1,12 +1,12 @@
 import { LabelData, LabelDimensions, LabelElement } from '../types';
 import { getZplFormat } from './zplFormats';
 
-export const generateZplFromElements = (
+export const generateZplFromElements = async(
   elements: LabelElement[],
   dimensions: LabelDimensions,
   labelData: LabelData,
   labelType : string
-): string => {
+): Promise<string> => {
   // Convert dimensions from inches to dots (203 dpi)
 
   
@@ -15,7 +15,7 @@ export const generateZplFromElements = (
 
   // Start ZPL code
 
-  let zpl = getZplFormat(labelData,labelData.labelType.type_name,labelType)
+  let zpl = await getZplFormat(labelData,labelData.labelType.type_name,labelType)
 //   let zpl = `^XA
 // ^PW${widthDots}
 // ^LL${heightDots}
@@ -26,28 +26,28 @@ export const generateZplFromElements = (
   return zpl;
 };
 
-export const generateZplCode = (
+export const generateZplCode = async (
   labelData: LabelData
-): { zpl: string; elements: LabelElement[] } => {
-  console.log("gago",labelData)
-  const dimensions = { width: labelData.cartonWidth, height: labelData.cartonHeight } 
-
+): Promise<{ zpl: string; elements: LabelElement[] }> => {
   const dpi = 203;
 
-  const labelWidthDots = dimensions.width * dpi; // Convert inches to dots
-  const labelHeightDots = dimensions.height * dpi; // Convert inches to dots
+  const dimensions = {
+    width: labelData.cartonWidth,
+    height: labelData.cartonHeight
+  };
+
+  const labelWidthDots = dimensions.width * dpi;
+  const labelHeightDots = dimensions.height * dpi;
 
   const fontWidthDots = 30;
   const title = labelData.modelName;
-  const title_size = 100
+  const titleSize = 100;
 
-  // Calculate width,height of the title
-  const titleWidth = title.length * title_size;
-  const titleHeight = title_size;
+  const titleWidth = title.length * titleSize;
+  const titleHeight = titleSize;
 
   const xPosition = Math.floor((labelWidthDots - titleWidth) / 2);
   const yPosition = Math.floor((labelHeightDots - titleHeight) / 2);
-
 
   const initialElements: LabelElement[] = [
     {
@@ -55,45 +55,46 @@ export const generateZplCode = (
       type: 'text',
       content: title,
       position: { x: xPosition, y: yPosition },
-      size: { width: title_size, height: title_size }
+      size: { width: titleSize, height: titleSize }
     },
     {
       id: 'brandName',
       type: 'text',
       content: labelData.brandName,
-      position: { x: 50, y: 100 },
+      position: { x: 50, y: yPosition + 120 },
       size: { width: fontWidthDots, height: fontWidthDots }
     },
     {
       id: 'serialNumber',
       type: 'text',
       content: `Serial Number: ${labelData.serialNumber}`,
-      position: { x: 50, y: 100 },
+      position: { x: 50, y: yPosition + 160 },
       size: { width: fontWidthDots, height: fontWidthDots }
     },
     {
       id: 'dimensions',
       type: 'text',
       content: `Dimensions: ${labelData.cartonHeight}"H x ${labelData.cartonWidth}"W x ${labelData.cartonDepth}"D`,
-      position: { x: 50, y: 150 },
+      position: { x: 50, y: yPosition + 200 },
       size: { width: fontWidthDots, height: fontWidthDots }
     },
     {
       id: 'barcode',
       type: 'barcode',
       content: labelData.serialNumber,
-      position: { x: 50, y: 200 },
-      size: { width: fontWidthDots, height: fontWidthDots }
+      position: { x: 50, y: yPosition + 250 },
+      size: { width: 2, height: 100 }
     }
   ];
 
-  const zpl = generateZplFromElements(initialElements, dimensions, labelData,'front');
+  const zpl = await generateZplFromElements(initialElements, dimensions, labelData, 'front');
 
   return {
     zpl,
     elements: initialElements
   };
 };
+
 
 export const convertMillimeterToInches = (value: number): number => {
   const inches = value / 25.4;

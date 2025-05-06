@@ -10,7 +10,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
   labelData,
   zplCode,
   onZplUpdate,
-  elementData,
+  elementData = [],
 }) => {
   const [activeTab, setActiveTab] = useState<'preview' | 'zpl'>('preview');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -18,9 +18,10 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [elements, setElements] = useState<LabelElement[]>([]);
+  const [sideZplCode, setSideZplCode] = useState<string | null>(null); // New state for side label ZPL
 
   useEffect(() => {
-    if (labelData) {
+    if (labelData && Array.isArray(elementData)) {
       const initializedElements = elementData.map((element: LabelElement) => ({
         ...element,
         position: { ...element.position },
@@ -52,20 +53,22 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
     };
 
     try {
-      const newZplCode = generateZplFromElements(elements, dimensions, labelData,'front');
+      const newZplCode = await generateZplFromElements(elements, dimensions, labelData, 'front');
       onZplUpdate(newZplCode);
 
       const url = await generateZplPreviewUrl(newZplCode, dimensions);
       setPreviewUrl(url);
 
-      // If label type is "Model Name", generate a second (side) preview
+      // If label type is "Model Name", generate a second (side) preview and ZPL code
       if (labelData.labelType?.type_name === 'Model Name') {
-        const sideElements = [...elements]; // You can customize this for different layouts
-        const sideZpl = generateZplFromElements(sideElements, side_dimensions, labelData,'side');
+        const sideElements = [...elements]; // Customize for different layouts if needed
+        const sideZpl = await generateZplFromElements(sideElements, side_dimensions, labelData, 'side');
+        setSideZplCode(sideZpl); // Store the side ZPL code
         const sideUrl = await generateZplPreviewUrl(sideZpl, side_dimensions);
         setSidePreviewUrl(sideUrl);
       } else {
         setSidePreviewUrl(null);
+        setSideZplCode(null); // Clear side ZPL code if label is not "Model Name"
       }
     } catch (err) {
       console.error('Error generating preview:', err);
@@ -173,6 +176,14 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
               <pre className="bg-gray-100 p-4 rounded-lg overflow-auto text-sm h-full whitespace-pre-wrap">
                 {zplCode || 'No ZPL code generated'}
               </pre>
+              {isModelLabel && sideZplCode && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold text-gray-800">Side Label ZPL Code</h3>
+                  <pre className="bg-gray-100 p-4 rounded-lg overflow-auto text-sm h-full whitespace-pre-wrap">
+                    {sideZplCode || 'No ZPL code generated for side label'}
+                  </pre>
+                </div>
+              )}
             </div>
           )}
         </div>
