@@ -116,6 +116,16 @@ const LabelForm: React.FC<LabelFormProps> = ({ onSubmit }) => {
           userManualQr : selected.user_manual_qr_path
         }));
       }
+      else{
+        setFormData((prev) => ({
+          ...prev,
+          modelName: '',
+          serialNumber: '',
+          brandName: '',
+          categoryName: '',
+          userManualQr : ''
+        }));
+      }
     }
   };
 
