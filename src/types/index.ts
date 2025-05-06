@@ -2,10 +2,23 @@ export interface LabelData {
   modelName: string;
   brandName : string;
   serialNumber: string;
-  cartonHeight: string;
-  cartonWidth: string;
-  cartonDepth: string;
-  labelType: 'front' | 'side';
+  cartonHeight: number;
+  cartonWidth: number;
+  cartonDepth: number;
+  userManualQr : string;
+  labelType: {
+    id : number,
+    type_name : string,
+    zpl_format : string,
+  };
+  labelTypeId?:number;
+  labelSize : {
+    id: number,
+    size_name : string,
+    label_type_id : number,
+    width : number,
+    height : number
+  };
   barcodeImage: File | null;
   certificationsImage: File | null;
   warningsImage: File | null;

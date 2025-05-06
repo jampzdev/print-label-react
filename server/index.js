@@ -72,50 +72,6 @@ app.post('/api/generate-label', upload.fields([
   }
 });
 
-// Generate mock ZPL code
-function generateMockZpl(
-  modelName,
-  serialNumber,
-  cartonSize,
-  labelType,
-  barcodeImagePath,
-  certificationsImagePath,
-  warningsImagePath
-) {
-  // Set dimensions based on label type
-  const dimensions = labelType === 'front' 
-    ? { width: 5.80, height: 4.58 } 
-    : { width: 3.48, height: 6.03 };
-
-    console.log("waaaaw")
-  
-  // Convert dimensions to dots (assuming 203 dpi)
-  const widthDots = Math.round(dimensions.width * 203);
-  const heightDots = Math.round(dimensions.height * 203);
-  
-  // Create a basic ZPL template
-  return `^XA
-^PW${widthDots}
-^LL${heightDots}
-^LH0,0
-^CI28
-
-^FO50,50^A0N,30,30^FD${modelName}^FS
-^FO50,100^A0N,30,30^FDSerial Number: ${serialNumber}^FS
-^FO50,150^A0N,30,30^FDCarton Size: ${cartonSize}^FS
-
-^FO50,200^BY3
-^BCN,100,Y,N,N
-^FD${serialNumber}^FS
-
-^FO50,350^A0N,20,20^FD[Barcode Image would be processed here]^FS
-^FO50,400^A0N,20,20^FD[Certifications Image would be processed here]^FS
-^FO50,450^A0N,20,20^FD[Warnings Image would be processed here]^FS
-
-^FO${widthDots - 200},${heightDots - 50}^A0N,20,20^FD${labelType} Label ${dimensions.width}x${dimensions.height}in^FS
-
-^XZ`;
-}
 
 // Start server
 app.listen(PORT, () => {
