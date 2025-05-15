@@ -111,7 +111,7 @@ export async function base64ToZplAndSave(base64: string, nickname: string): Prom
         formData.append('nickname', nickname); // other fields
 
         // Send the request
-        const response = await fetch('http://localhost:3001/api/save-image', {
+        const response = await fetch(import.meta.env.VITE_DOMAIN_NAME+'/api/save-image', {
             method: 'POST',
             body: formData, // No need to set Content-Type header; the browser sets it automatically
         });
