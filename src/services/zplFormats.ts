@@ -35,7 +35,7 @@ export const getZplFormat = async (
             ^LL0508
             
             ^CI28
-            
+            ^FO${x},${y-120}^A0N,${font},${font}^FDPro Splitter 5^FS
             ^FO${x},${y}^A0N,${font},${font}^FD${labelData.modelName}^FS
             ^FO${x},${y+80}^A0N,${font-20},${font-50}^FD${labelData.brandName}^FS
             ^FO${x+120},${y+120}${imgToZplRes}^FS

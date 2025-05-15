@@ -1,4 +1,5 @@
 export async function imagePathToZpl(filePath: string): Promise<string> {
+    console.log(filePath)
     const img = new Image();
     img.src = filePath;
     img.crossOrigin = 'Anonymous';
@@ -42,5 +43,10 @@ export async function imagePathToZpl(filePath: string): Promise<string> {
         }
     }
   
-    return `^GFA,${totalBytes},${totalBytes},${bytesPerRow},${zplBytes.join('')}`;
+    return `^XA
+^PW1016
+^LL0508
+^CI28
+^GFA,${totalBytes},${totalBytes},${bytesPerRow},${zplBytes.join('')}
+^XZ`;
 }

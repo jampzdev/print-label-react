@@ -7,6 +7,7 @@ export interface LabelData {
   cartonWidth: number;
   cartonDepth: number;
   userManualQr : string;
+  productName?: string;
   labelType: {
     id : number,
     type_name : string,
@@ -64,3 +65,18 @@ export interface LabelElement {
   position: { x: number; y: number };
   size: { width: number; height: number };
 }
+
+export interface LabelSizeQueryResult {
+  min_width: number;
+  max_width: number;
+  min_height: number;
+  max_height: number;
+  size_name : string;
+  side_details? : {
+    id: number,
+    size_name : string,
+    width : number,
+    height : number
+  };
+}
+
